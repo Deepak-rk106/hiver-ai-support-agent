@@ -145,6 +145,7 @@ Raw Customer Support Dataset
 
 # 5. System Architecture
 
+```text
 The complete support-agent pipeline is:
                     Customer Message
                            |
@@ -194,7 +195,7 @@ The complete support-agent pipeline is:
                            |
                            v
                     Decision Log
-
+```
 ---
 
 # 6. Intent Classification
@@ -229,11 +230,7 @@ If the rule-based system does not identify an intent, the request is passed to t
 
 The classifier predicts:
 
-Intent
-+
-Prediction probabilities
-+
-Maximum confidence
+Intent + Prediction probabilities + Maximum confidence
 
 The current model is loaded from:
 
@@ -310,6 +307,7 @@ human_review
 
 # 9. Safety Decision Layer
 
+```text
 The final decision is not based on the LLM alone.
 
 The system uses multiple safety checks.
@@ -347,7 +345,7 @@ If the intent is sufficiently confident, escalation is auto, and historical simi
 
 Decision:
 auto
-
+```
 ---
 
 # 10. Gemini Response Generation
@@ -386,7 +384,7 @@ Respond directly to the customer.
 ---
 
 # 11. Why Gemini Is Not Used for Human Review
-
+```text
 A major design decision is that Gemini is not called when the decision layer selects:
 
 human_review
@@ -409,7 +407,7 @@ HUMAN_REVIEW
   +--> Safe fallback
 
 This reduces the chance of generating unsupported answers for uncertain cases.
-
+```
 ---
 
 # 12. Response Source
@@ -482,7 +480,7 @@ I would be happy to check your flight status. Could you please share
 your flight number or confirmation code so I can look up the details for you?
 
 This demonstrates the complete path:
-
+```text
 Customer message
       |
       v
@@ -505,13 +503,13 @@ Gemini
       |
       v
 Final response
-
+```
 ---
 
 # 14. Project Structure
 
 The repository is organized approximately as follows:
-
+```text
 Hiver-AI-Support-Agent/
 │
 ├── data/
@@ -541,7 +539,7 @@ Hiver-AI-Support-Agent/
 └── README.md
 
 The .env file is not included in the repository.
-
+```
 ---
 
 # 15. How to Set Up the Project
@@ -589,11 +587,6 @@ so the API key remains outside the repository.
 16. Run the AI Support Agent
 
 Run:
-
-python src\agent.py
-
-Run the AI Support Agent
-
-Run:
-
+cd D:\Hiver-AI-Support-Agent
+venv\Scripts\activate
 python src\agent.py
