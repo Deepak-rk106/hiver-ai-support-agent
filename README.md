@@ -587,6 +587,17 @@ so the API key remains outside the repository.
 16. Run the AI Support Agent
 
 Run:
-cd D:\Hiver-AI-Support-Agent
+
+git clone <YOUR_GITHUB_REPOSITORY_URL>
+
+cd Hiver-AI-Support-Agent
+
+python -m venv venv
+
 venv\Scripts\activate
+
+pip install -r requirements.txt
+
+Then run:
+
 python src\agent.py
