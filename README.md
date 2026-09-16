@@ -103,7 +103,7 @@ The selected brand for this implementation is:
 
 The processed project data is stored in:
 
-```text
+
 data/processed/jetblue_labeling.csv
 
 ---
@@ -139,8 +139,9 @@ Raw Customer Support Dataset
             v                   v
      ML Classification      Retrieval
      
+---
 
-5. System Architecture
+# 5. System Architecture
 
 The complete support-agent pipeline is:
                     Customer Message
@@ -192,8 +193,9 @@ The complete support-agent pipeline is:
                            v
                     Decision Log
 
+---
 
-6. Intent Classification
+# 6. Intent Classification
 
 The system uses a two-stage intent classification approach.
 
@@ -217,7 +219,9 @@ Intent Source:
 rule
 Rule-based classification is deterministic, so the system assigns a confidence of 1.0 when a rule matches.
 
-7. Machine Learning Intent Classification
+---
+
+# 7. Machine Learning Intent Classification
 
 If the rule-based system does not identify an intent, the request is passed to the trained ML intent classifier.
 
@@ -264,7 +268,9 @@ human_review
 
 This is intentional safety behavior.
 
-8. Escalation Detection
+---
+
+# 8. Escalation Detection
 
 After intent detection, the system determines whether the request can be automatically handled.
 
@@ -297,7 +303,10 @@ results in:
 
 Decision:
 human_review
-9. Safety Decision Layer
+
+---
+
+# 9. Safety Decision Layer
 
 The final decision is not based on the LLM alone.
 
@@ -337,7 +346,9 @@ If the intent is sufficiently confident, escalation is auto, and historical simi
 Decision:
 auto
 
-10. Gemini Response Generation
+---
+
+# 10. Gemini Response Generation
 
 Gemini is used only after the system decides that a request is safe to handle automatically.
 
@@ -369,7 +380,10 @@ Avoid inventing account information.
 Avoid exposing private information.
 Keep responses concise and professional.
 Respond directly to the customer.
-12. Why Gemini Is Not Used for Human Review
+
+---
+
+# 11. Why Gemini Is Not Used for Human Review
 
 A major design decision is that Gemini is not called when the decision layer selects:
 
@@ -394,7 +408,9 @@ HUMAN_REVIEW
 
 This reduces the chance of generating unsupported answers for uncertain cases.
 
-13. Response Source
+---
+
+# 12. Response Source
 
 The agent records the source of the final response.
 
@@ -421,7 +437,9 @@ fallback
 
 This distinction is useful during evaluation because it makes it possible to determine whether a response came from the LLM or the fallback mechanism.
 
-14. Example End-to-End Run
+----
+
+#13. Example End-to-End Run
 
 Example customer message:
 
@@ -486,7 +504,9 @@ Gemini
       v
 Final response
 
-16. Project Structure
+---
+
+# 14. Project Structure
 
 The repository is organized approximately as follows:
 
@@ -520,7 +540,10 @@ Hiver-AI-Support-Agent/
 
 The .env file is not included in the repository.
 
-17. How to Set Up the Project
+---
+
+# 15. How to Set Up the Project
+
 Step 1 — Clone the repository
 git clone <YOUR_GITHUB_REPOSITORY_URL>
 cd Hiver-AI-Support-Agent
@@ -559,7 +582,9 @@ The project .gitignore contains:
 
 so the API key remains outside the repository.
 
-18. Run the AI Support Agent
+---
+
+# 16. Run the AI Support Agent
 
 Run:
 
