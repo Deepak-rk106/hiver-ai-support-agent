@@ -2,11 +2,89 @@ import joblib
 import csv
 import os
 from datetime import datetime
+from dotenv import load_dotenv
+from google import genai
 
 from intent_rules import rule_based_intent
 from escalation_rules import rule_based_escalation
 from retrieval import ResponseRetriever
 
+load_dotenv()
+
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+if not GEMINI_API_KEY:
+    raise RuntimeError(
+        "GEMINI_API_KEY is not set. Check your .env file."
+    )
+
+gemini_client = genai.Client(
+    api_key=GEMINI_API_KEY
+)
+
+GEMINI_MODEL = "gemini-3.6-flash"
+
+def generate_gemini_response(
+    customer_message,
+    intent,
+    historical_customer_message,
+    historical_support_reply
+):
+    prompt = f"""
+You are an AI customer support agent.
+
+Your job is to answer the customer's message clearly,
+helpfully, and safely.
+
+CUSTOMER MESSAGE:
+{customer_message}
+
+DETECTED INTENT:
+{intent}
+
+HISTORICAL SIMILAR CUSTOMER MESSAGE:
+{historical_customer_message}
+
+HISTORICAL BRAND SUPPORT RESPONSE:
+{historical_support_reply}
+
+Instructions:
+1. Use the historical support response as guidance.
+2. Do not copy it blindly.
+3. Do not invent policies, prices, refunds, guarantees,
+   or account information.
+4. Do not mention that you are using historical data.
+5. Do not expose private information.
+6. Keep the response concise and professional.
+7. If the historical response does not provide enough
+   information, give a safe general response.
+8. Respond directly to the customer.
+
+Return only the customer-support response.
+"""
+
+    try:
+        response = gemini_client.models.generate_content(
+            model=GEMINI_MODEL,
+            contents=prompt
+        )
+
+        if response.text:
+            return response.text.strip()
+
+        return (
+            "Thanks for contacting support. "
+            "Please provide more details so we can assist you."
+        )
+
+    except Exception as error:
+        print(f"Gemini response generation failed: {error}")
+
+        return (
+            "Thanks for contacting support. "
+            "We're sorry for the inconvenience. "
+            "Please provide more details so we can assist you."
+        )
 
 def generate_safe_response(customer_message, intent, decision):
     if decision == "human_review":
@@ -261,11 +339,30 @@ def support_agent(customer_message):
             "enough and a similar historical response exists."
         )
 
-    safe_response = generate_safe_response(
-        customer_message,
-        intent,
-        decision
-    )
+# 5. Generate final response
+
+    if decision == "auto":
+
+        safe_response = generate_gemini_response(
+            customer_message=customer_message,
+            intent=intent,
+            historical_customer_message=
+                best_match["customer_message"],
+            historical_support_reply=
+                best_match["support_reply"]
+        )
+
+        response_source = "gemini"
+
+    else:
+
+        safe_response = generate_safe_response(
+            customer_message,
+            intent,
+            decision
+        )
+
+        response_source = "fallback"
 
     # 5. Return complete result
     result = {
@@ -280,10 +377,9 @@ def support_agent(customer_message):
         "decision": decision,
         "reason": reason,
         "response": safe_response,
-        "retrieved_customer_message":
-            best_match["customer_message"],
-        "retrieved_support_reply":
-            best_match["support_reply"]
+        "response_source": response_source,
+        "retrieved_customer_message": best_match["customer_message"],
+          "retrieved_support_reply": best_match["support_reply"]
     }
     log_decision(result)
 
@@ -297,7 +393,7 @@ def support_agent(customer_message):
 if __name__ == "__main__":
 
     test_message = (
-        "My flight has been delayed for several hours"
+        "Can you check my flight status? My flight is scheduled to depart at 6 PM today."
     )
 
     result = support_agent(test_message)
@@ -311,6 +407,9 @@ if __name__ == "__main__":
 
     print("\nPredicted Intent:")
     print(result["intent"])
+
+    print("\nResponse Source:")
+    print(result["response_source"])
 
     print(
         f"Intent Confidence: "
