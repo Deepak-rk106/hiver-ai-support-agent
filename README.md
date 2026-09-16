@@ -120,6 +120,8 @@ Evaluation
 Response generation
 
 The processing workflow is conceptually:
+
+```text
 Raw Customer Support Dataset
             |
             v
@@ -138,7 +140,7 @@ Raw Customer Support Dataset
             |                   |
             v                   v
      ML Classification      Retrieval
-     
+```
 ---
 
 # 5. System Architecture
@@ -584,7 +586,7 @@ so the API key remains outside the repository.
 
 ---
 
-# 16. Run the AI Support Agent
+16. Run the AI Support Agent
 
 Run:
 
